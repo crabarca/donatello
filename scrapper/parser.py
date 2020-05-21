@@ -7,7 +7,7 @@ from urllib.parse import parse_qs
 import requests as rq
 
 
-class Scrapper:
+class Parser:
   def __init__(self, base_url):
     self.base_url = base_url
 
@@ -35,14 +35,3 @@ class Scrapper:
       internal_id = self._extract_deputy_id(url)
       data[name] = {'url': url, 'internal_id': internal_id}
     return data
-
-
-scrapper = Scrapper(BASE_URL)
-reference_data = scrapper.get_deputy_reference_data()
-
-
-
-
-
-
-
