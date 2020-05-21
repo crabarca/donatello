@@ -18,6 +18,7 @@ def create_expenses_map(html):
 
 def extract_expenses_table(raw_html):
   def clean_text(text):
+    # Por alguna razon el texto esta bastante sucio con unicode y espacios
     return unicodedata.normalize("NFKD", text).replace('\n', '').strip()
 
   # Extract table from raw html
@@ -26,9 +27,8 @@ def extract_expenses_table(raw_html):
   rows = []
   if table:
     for row in table.find_all('tr'):
+      # Seleccionamos solo la columna nombre y monto
       rows.append([clean_text(val.string) for val in row.find_all('td')][:2])
-      # rows.append([val.string.encode('utf-8') for val in row.find_all('td')])
-    # print(table)
   else:
     print("No hay datos para este mes")
 

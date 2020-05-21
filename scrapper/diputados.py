@@ -7,44 +7,41 @@ from urllib.parse import parse_qs
 import requests as rq
 
 
-def base_site_request(base_url):
-  response = rq.get(base_url)
-  return response.text
+class Scrapper:
+  def __init__(self, base_url):
+    self.base_url = base_url
 
-def deputy_sites_urls(base_html):
-  parser = Bs(base_html, 'html.parser')
-  deputies = parser.find_all('article', 'grid-2')
-  deputy_urls = []
-  for deputy in deputies:
-    deputy_urls.append(deputy.a['href'])
-  return deputy_urls
+  def _base_site_request(self):
+    return rq.get(self.base_url).text
 
-def deputy_names(base_html):
-  parser = Bs(base_html, 'html.parser')
-  deputies = parser.find_all('article', 'grid-2')
-  name_list  = []
-  for deputy in deputies:
-    name_list.append(deputy.h4.string.split(".")[1].strip(" "))
-  return name_list
-
-def deputy_ids(deputy_urls):
-  ids = []
-  for url in deputy_urls:
+  def _extract_deputy_name(self, bstring):
+    return bstring.h4.string.split(".")[1].strip(" ")
+  
+  def _extract_deputy_url(self, bstring):
+    return bstring.a['href']
+  
+  def _extract_deputy_id(self, url):
     parsed = urlparse.urlparse(url)
-    ids.append(parse_qs(parsed.query)['prmID'][0])
-  return ids
+    return parse_qs(parsed.query)['prmID'][0]
 
-base_html = base_site_request(BASE_URL)
-deputy_names = deputy_names(base_html) 
-deputy_urls = deputy_sites_urls(base_html)
-deputy_ids = deputy_ids(deputy_urls)
+  def get_deputy_reference_data(self):
+    base_html = self._base_site_request()
+    parser = Bs(base_html, 'html.parser')
+    deputies = parser.find_all('article', 'grid-2')
+    data = {}
+    for deputy in deputies:
+      name = self._extract_deputy_name(deputy)
+      url = self._extract_deputy_url(deputy)
+      internal_id = self._extract_deputy_id(url)
+      data[name] = {'url': url, 'internal_id': internal_id}
+    return data
 
-if __name__ == "__main__":
-  base_html = base_site_request(BASE_URL)
-  deputy_names = deputy_names(base_html) 
-  deputy_urls = deputy_sites_urls(base_html)
-  deputy_ids = deputy_ids(deputy_urls)
-  print("holaa")
+
+scrapper = Scrapper(BASE_URL)
+reference_data = scrapper.get_deputy_reference_data()
+
+
+
 
 
 
