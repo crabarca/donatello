@@ -8,5 +8,5 @@ fi
 docker run -p 5432:5432 \
 -e POSTGRES_PASSWORD="postgres" \
 -e PGDATA=/var/lib/postgresql/data \
--e POSTGRES_DB="iic3143_riega_me" \
+-e POSTGRES_DB="donatello" \
 postgres:10

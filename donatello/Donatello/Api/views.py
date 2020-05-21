@@ -5,7 +5,7 @@ from .serializers import DeputySerializer
 from rest_framework import generics
                          
 # Create your views here.
-class DeputyList(generics.ListCreateAPIView):
+class DeputyList(generics.ListAPIView):
     queryset = Deputy.objects.all()
     serializer_class = DeputySerializer
 
