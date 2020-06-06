@@ -2,6 +2,12 @@
 # Data files
 data/
 
+# Log files
+log.txt
+
+# Geckodriver
+gecko*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

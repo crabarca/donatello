@@ -35,3 +35,5 @@ class Parser:
       internal_id = self._extract_deputy_id(url)
       data[name] = {'url': url, 'internal_id': internal_id}
     return data
+
+    

@@ -7,8 +7,10 @@ if __name__ == "__main__":
 
   parser = Parser(BASE_URL)  
   reference_data = parser.get_deputy_reference_data()
-  operationalDriver = OperationalDriver(OPER_URL, reference_data)
-  operationalDriver.run()
+
+  if reference_data:
+    operationalDriver = OperationalDriver(OPER_URL, reference_data)
+    operationalDriver.run_2()
 
 
 

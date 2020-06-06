@@ -5,7 +5,7 @@ if [ -z $(docker images -q postgres:10) ]; then
   docker pull postgres:10
 fi
 
-docker run -p 5432:5432 \
+docker run -p 5433:5432 \
 -e POSTGRES_PASSWORD="postgres" \
 -e PGDATA=/var/lib/postgresql/data \
 -e POSTGRES_DB="donatello" \
