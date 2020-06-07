@@ -5,7 +5,7 @@ from urls import OPER_URL
 from time import sleep
 import csv
 
-class OperationalDriver:
+class Operational:
   def __init__(self, operational_url, reference_data):
     self.operational_url = operational_url
     self.ref_data = reference_data

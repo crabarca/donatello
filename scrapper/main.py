@@ -1,12 +1,12 @@
 from urls import BASE_URL, OPER_URL, PROFILE_URL
-from operational import OperationalDriver
+from operational import Operational
 from profile import Profile
 from parser import Parser
 
 
 def run_operational(reference_data):
   if reference_data:
-    operationalDriver = OperationalDriver(OPER_URL, reference_data)
+    operationalDriver = Operational(OPER_URL, reference_data)
     operationalDriver.run()
 
 

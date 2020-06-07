@@ -9,9 +9,9 @@ def clean_text(text):
   return unicodedata.normalize("NFKD", text).replace('\n', '').strip()
 
 def extract_profile(raw_html):
-  parser = Bs(base_html, 'html.parser')
+  parser = Bs(raw_html, 'html.parser')
   profile_section = parser.find('section', {'id': 'info-ficha'})
-  profile = profile_section.findChildren('p', recursive=False)
+  profile = profile_section.findChildren('p', recursive=True)
   return profile
     
 
