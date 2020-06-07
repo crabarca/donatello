@@ -8,6 +8,14 @@ def clean_text(text):
   # Por alguna razon el texto esta bastante sucio  con unicode chars y espacios
   return unicodedata.normalize("NFKD", text).replace('\n', '').strip()
 
+def extract_profile(raw_html):
+  parser = Bs(base_html, 'html.parser')
+  profile_section = parser.find('section', {'id': 'info-ficha'})
+  profile = profile_section.findChildren('p', recursive=False)
+  return profile
+    
+
+
 
 def extract_operational_data(raw_html, year, month):
   """

@@ -6,7 +6,6 @@ from urllib.parse import parse_qs
 
 import requests as rq
 
-
 class Parser:
   def __init__(self, base_url):
     self.base_url = base_url
@@ -36,4 +35,5 @@ class Parser:
       data[name] = {'url': url, 'internal_id': internal_id}
     return data
 
-    
+  def get_deputy_profile(self):
+    base_html = self.

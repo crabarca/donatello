@@ -48,7 +48,7 @@ class OperationalDriver:
       lines = [line.strip() for line in f.readlines()]
       return lines
 
-  def run_2(self):
+  def run(self):
     scrapped = self.read_log('/home/cristobal/repos2/donatello/scrapper/log.txt') 
     for deputy in self.ref_data:
       deputy_id = self.ref_data[deputy]['internal_id']
