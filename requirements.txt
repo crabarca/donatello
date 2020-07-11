@@ -1,4 +1,4 @@
-django==3.0.6
+django==3.0.7
 psycopg2-binary
 djangorestframework==3.11.0
 beautifulsoup4
