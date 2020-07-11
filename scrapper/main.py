@@ -9,7 +9,6 @@ def run_operational(reference_data):
     operationalDriver = Operational(OPER_URL, reference_data)
     operationalDriver.run()
 
-
 def run_profiles(reference_data):
   if reference_data:
     profileDriver = Profile(reference_data)

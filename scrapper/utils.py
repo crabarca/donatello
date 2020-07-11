@@ -10,8 +10,6 @@ def clean_text(text):
 
 def extract_profile(raw_html):
   parser = Bs(raw_html, 'html.parser')
-  profile_section = parser.find('section', {'id': 'info-ficha'})
-  profile = profile_section.findChildren('p', recursive=True)
   return profile
     
 

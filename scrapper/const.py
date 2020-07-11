@@ -1,4 +1,6 @@
 
 
+DATAFOLDER='./data'
+
 
 
