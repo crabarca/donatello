@@ -7,3 +7,7 @@ Este proyecto nace de la necesidad de tener un lugar centralizado de datos refer
 - ¿ Cuál es el promedio de gasto por Telefonia ?
 - cualquier pregunta asociada a estadisticas básicas....
 
+
+
+## Como usar el scrapper
+
