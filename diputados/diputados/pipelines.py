@@ -5,9 +5,15 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+# from itemadapter import ItemAdapter
 
-
-class Diputados1Pipeline:
+class DiputadosPipeline:
     def process_item(self, item, spider):
+        print(item)
         return item
+    
+
+    def clean_operational_data(self, item):
+        # year = 
+        pass
+

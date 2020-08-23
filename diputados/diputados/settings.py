@@ -7,10 +7,10 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'diputados1'
+BOT_NAME = 'diputados'
 
-SPIDER_MODULES = ['diputados1.spiders']
-NEWSPIDER_MODULE = 'diputados1.spiders'
+SPIDER_MODULES = ['diputados.spiders']
+NEWSPIDER_MODULE = 'diputados.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -62,9 +62,9 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'diputados1.pipelines.Diputados1Pipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'diputados.pipelines.DiputadosPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
