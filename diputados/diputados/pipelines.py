@@ -7,14 +7,16 @@
 # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
 from bs4 import BeautifulSoup as Bs
+import logging
 import unicodedata
 
 
 class DiputadosPipeline:
     def process_item(self, item, spider):
-        raw_table = item['data'][0]
-        header, row = self.extract_operational_data(raw_table, 2020, 2)
-        print(header, row)
+        raw_data = item['raw_data'][0]
+        year = self.parse_selection(item['raw_year'][0])
+        month = self.parse_selection(item['raw_month'][0])
+        header, row = self.extract_operational_data(raw_data, 2020, 2)
         return item
 
     def extract_operational_data(self, raw_html, year, month):
@@ -55,6 +57,13 @@ class DiputadosPipeline:
             return headers, rows
         else:
             return [], []
+
+    def parse_selection(self, raw_html):
+        parser = Bs(raw_html, 'html.parser')
+        all_options = parser.find_all('option', selected=True)
+        for option in all_options:
+            logging.info(option)
+
 
 
     def clean_text(self, text):

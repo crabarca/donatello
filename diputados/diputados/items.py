@@ -11,8 +11,14 @@ class DiputadosItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+class RawOperational(scrapy.Item):
+    diputado_id = scrapy.Field()
+    raw_year = scrapy.Field()
+    raw_month = scrapy.Field()
+    raw_data = scrapy.Field()
+
 class Operational(scrapy.Item):
-    diputadoId = scrapy.Field()
+    diputado_id = scrapy.Field()
     year = scrapy.Field()
     month = scrapy.Field()
     data = scrapy.Field()

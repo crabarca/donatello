@@ -7,7 +7,7 @@ from scrapy.spiders import CrawlSpider, Spider, Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.selector import Selector
 from scrapy import Request, FormRequest
-from diputados.items import Operational
+from diputados.items import RawOperational
 from time import sleep
     
 class SpiderSp(Spider):
@@ -36,7 +36,7 @@ class SpiderSp(Spider):
 		viewState = response.xpath(viewStateXp).extract()[0]
 		viewStateGenerator = response.xpath(viewStateGeneratorXp).extract()[0]
 
-		for mes in range(1,3):
+		for mes in range(1,2):
 			req = FormRequest(response.url,
 				method='POST',
 				headers={
@@ -70,10 +70,9 @@ class SpiderSp(Spider):
 			yield req
 
 	def parse_table(self, response):
-		operational = Operational()
-		operational['diputadoId'] = response.url.split("prmId=")[1]
-		operational['month'] = response.css('#ContentPlaceHolder1_ContentPlaceHolder1_DetallePlaceHolder_ddlMes') .extract()
-		operational['year'] = response.css('#ContentPlaceHolder1_ContentPlaceHolder1_DetallePlaceHolder_ddlAno').extract()
-		# operational['year'] = response.xpath('//*[@id="ContentPlaceHolder1_ContentPlaceHolder1_DetallePlaceHolder_ddlAno"]/input[@selected="selected")').extract()
-		operational['data'] = response.css('.table-responsive').extract()
+		operational = RawOperational()
+		operational['diputado_id'] = response.url.split("prmId=")[1]
+		operational['raw_month'] = response.css('#ContentPlaceHolder1_ContentPlaceHolder1_DetallePlaceHolder_ddlMes') .extract()
+		operational['raw_year'] = response.css('#ContentPlaceHolder1_ContentPlaceHolder1_DetallePlaceHolder_ddlAno').extract()
+		operational['raw_data'] = response.css('.table-responsive').extract()
 		yield operational
