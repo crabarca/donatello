@@ -20,8 +20,6 @@ class SpiderSp(Spider):
 		for url in diputadoDetailUrls[:2]:
 			yield (Request('https://www.camara.cl/diputados/' + url, callback=self.parse_menu_list_page))
 
-		# yield from response.follow_all(diputadoDetailUrls, self.parse_manga_list_page)
-
 	def parse_menu_list_page(self, response):
 		xp = '//*[@id="menu-acordeon"]/li[3]/ul/li[1]/a/@href'
 		operacionalUrl = response.xpath(xp).extract()[:2]

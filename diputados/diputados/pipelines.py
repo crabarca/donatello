@@ -7,10 +7,12 @@
 # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
 from bs4 import BeautifulSoup as Bs
+import unicodedata
+
 
 class DiputadosPipeline:
     def process_item(self, item, spider):
-        raw_table = item['data']
+        raw_table = item['data'][0]
         header, row = self.extract_operational_data(raw_table, 2020, 2)
         print(header, row)
         return item
@@ -30,8 +32,8 @@ class DiputadosPipeline:
 
         # Reemplazar los 223.234 por 223234
         header, row = transposed[0], list(map(lambda s: s.replace('.', ''), transposed[1]))
-        header.insert(0, 'Ano')
-        header.insert(1, 'Mes')
+        header.insert(0, 'ANO')
+        header.insert(1, 'MES')
         row.insert(0, year)
         row.insert(1, month)
         return header, row 
@@ -42,16 +44,19 @@ class DiputadosPipeline:
             Retorna: 
             Tabla con headers y datos en formato lista
         """
-        print(raw_html)
-        parser = Bs(raw_html)
+        parser = Bs(raw_html, 'html.parser')
         table = parser.find('table', {"class": 'tabla'})
         if table:
             th = table.find_all('th')
-            headers = [clean_text(header.string) for header in th]
+            headers = [self.clean_text(header.string) for header in th]
             rows = []
             for row in table.find_all('tr'):
-                rows.append([clean_text(val.string) for val in row.find_all('td')])
+                rows.append([self.clean_text(val.string) for val in row.find_all('td')])
             return headers, rows
         else:
             return [], []
 
+
+    def clean_text(self, text):
+        # Por alguna razon el texto esta bastante sucio  con unicode chars y espacios
+        return unicodedata.normalize("NFKD", text).replace('\n', '').strip()
