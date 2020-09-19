@@ -14,3 +14,4 @@ class Profile:
       response = rq.get(PROFILE_URL.format(internal_id))
 
       profile = extract_profile(response.text)
+
