@@ -10,6 +10,7 @@ from scrapy import Request, FormRequest
 from diputados.items import RawOperational
 from time import sleep
     
+DATA_FOLDER = '/home/crab/repos/donatello/data/raw/'
 class SpiderSp(Spider):
 	name = "diputado"
 	start_urls = ['http://www.camara.cl/diputados/diputados.aspx']
@@ -17,12 +18,12 @@ class SpiderSp(Spider):
 	def parse(self, response):
 		xp = '//article[@class = "grid-2"]/h4/a/@href'
 		diputadoDetailUrls = response.xpath(xp).extract()
-		for url in diputadoDetailUrls[:2]:
+		for url in diputadoDetailUrls:
 			yield (Request('https://www.camara.cl/diputados/' + url, callback=self.parse_menu_list_page))
 
 	def parse_menu_list_page(self, response):
 		xp = '//*[@id="menu-acordeon"]/li[3]/ul/li[1]/a/@href'
-		operacionalUrl = response.xpath(xp).extract()[:2]
+		operacionalUrl = response.xpath(xp).extract()
 		for url in operacionalUrl:
 			yield (Request('https://www.camara.cl/diputados/detalle/'+url, callback=self.parse_operational_table))
 
@@ -35,39 +36,46 @@ class SpiderSp(Spider):
 		eventValidation = response.xpath(validationXp).extract()[0]
 		viewState = response.xpath(viewStateXp).extract()[0]
 		viewStateGenerator = response.xpath(viewStateGeneratorXp).extract()[0]
+		for year in range(2019, 2021):
+			for month in range(1,13):
+				req = FormRequest(response.url,
+					method='POST',
+					headers={
+					"Accept": "*/*","Accept-Encoding": "gzip, deflate, br", 
+					"Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
+					"Cache-Control": "no-cache" , "Connection": "keep-alive",
+					"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+					"Cookie": "_ga=GA1.2.1964487235.1594267649; _gid=GA1.2.615547272.1594267649; _gat=1",
+					"Host": "www.camara.cl",
+					"Origin": "https://www.camara.cl",
+					"Sec-Fetch-Dest": "empty",
+					"Sec-Fetch-Mode": "cors",
+					"Sec-Fetch-Site": "same-origin",
+					"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
+					"X-MicrosoftAjax": "Delta=true",
+					"X-Requested-With": "XMLHttpRequest"
+					}, 
+					formdata = {
+					"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$ScriptManager1":"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$UpdatePanel1|ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlMes",
+					"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$ddlDiputados": str(diputadoId),
+					"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlMes": str(month),
+					"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlAno": str(year),
+					"__EVENTTARGET":"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlMes",
+					"__EVENTARGUMENT":"",
+					"__VIEWSTATEGENERATOR": str(viewStateGenerator),
+					"__VIEWSTATE": str(viewState),
+					"__LASTFOCUS":"",
+					"__EVENTVALIDATION": str(eventValidation),
+					},
+					callback=self.save_html, cb_kwargs=dict(metadata={'diputadoName': str(diputadoId),
+																		'year': year,
+																		'month': month}))
+				yield req
 
-		for mes in range(1,2):
-			req = FormRequest(response.url,
-				method='POST',
-				headers={
-				"Accept": "*/*","Accept-Encoding": "gzip, deflate, br", 
-				"Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-				"Cache-Control": "no-cache" , "Connection": "keep-alive",
-				"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-				"Cookie": "_ga=GA1.2.1964487235.1594267649; _gid=GA1.2.615547272.1594267649; _gat=1",
-				"Host": "www.camara.cl",
-				"Origin": "https://www.camara.cl",
-				"Sec-Fetch-Dest": "empty",
-				"Sec-Fetch-Mode": "cors",
-				"Sec-Fetch-Site": "same-origin",
-				"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36",
-				"X-MicrosoftAjax": "Delta=true",
-				"X-Requested-With": "XMLHttpRequest"
-				}, 
-				formdata = {
-				"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$ScriptManager1":"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$UpdatePanel1|ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlMes",
-				"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$ddlDiputados": str(diputadoId),
-				"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlMes": str(mes),
-				"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlAno": "2019",
-				"__EVENTTARGET":"ctl00$ctl00$ctl00$ContentPlaceHolder1$ContentPlaceHolder1$DetallePlaceHolder$ddlMes",
-				"__EVENTARGUMENT":"",
-				"__VIEWSTATEGENERATOR": str(viewStateGenerator),
-				"__VIEWSTATE": str(viewState),
-				"__LASTFOCUS":"",
-				"__EVENTVALIDATION": str(eventValidation),
-				},
-				callback=self.parse_table)
-			yield req
+	def save_html(self, response, metadata):
+		filename = f"{metadata['diputadoName']}_{metadata['year']}_{metadata['month']}.html"
+		with open(f"{DATA_FOLDER}{filename}", 'wb') as f:
+			f.write(response.body)
 
 	def parse_table(self, response):
 		operational = RawOperational()
