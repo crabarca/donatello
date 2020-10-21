@@ -4,10 +4,13 @@ import json
 import logging
 import unicodedata
 import os
+import csv
 
-RAW_HTML = "../data/Honorable Cámara de Diputadas y Diputados - Chile.html"
 RAW_FILES = Path("../data/raw/").glob("**/*")
 METADATA_FILE = Path("../data/diputados_metadata.json")
+OPERATIONAL_METADATA = Path("../data/operational_metadata.json")
+PROCESSED_FOLDER = Path("../data/processed")
+UNIFIED_CSV = Path("../data/processed/gasto_operacional.csv")
 
 def extract_table(raw_html):
     """
@@ -29,7 +32,7 @@ def extract_table(raw_html):
 
 def extract_operational_data(raw_html):
     """
-        Desde los datos raw se extraen las columnas 
+        Desde los archivos html se extraen las columnas con datos
     """
     headers, rows = extract_table(raw_html)
     if not headers or not rows:
@@ -59,21 +62,75 @@ def clean_text(text):
     return unicodedata.normalize("NFKD", text).replace('\n', '').strip()
 
 def write_json(filename, data):
-    pass
+    with open(filename, 'w+') as outfile:
+        json.dump(data, outfile, ensure_ascii=False)
 
 def split_filename(file: Path):
     return file.stem.split('_')
 
+def write_csv(file: Path, header, row):
+    with open(file, 'r') as f:
+        writer = csv.writer(f)
+        # writer.r
+
+def operational_metadata(file_list):
+    # Función que se utiliza para extraer todas las posibles
+    # columnas que existen en las tablas
+    columns = {}
+    for html in file_list:
+        with open(html, 'r') as raw:
+            header, rows = extract_operational_data(raw)
+            for name, idx in enumerate(header):
+                columns[name] = idx
+
+    return { 'columns' : columns }
+
+def filename_metadata(file: Path):
+    return [item for item in file.stem.split('_')]
+
+def write_csv_header(file: Path, header):
+    header.insert(0, 'ANO')
+    header.insert(1, 'MES')
+    header.insert(2, 'ID')
+    with open(file, 'a+') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+
+
+def table_to_csv(name, header, row):
+  filepath = f"/home/cristobal/repos2/donatello/scrapper/data/{name}.csv"
+  csv_file = Path(filepath)
+  if csv_file.is_file():
+    with open(filepath, 'a+') as f:
+      writer = csv.writer(f)
+      writer.writerow(row)
+  else:
+    with open(filepath, 'a+') as f:
+      writer = csv.writer(f)
+      writer.writerow(header)
+      writer.writerow(row)
+
 
 if __name__ == "__main__":
     htmls = [html.resolve() for html in RAW_FILES if html.is_file()]
-
-    with open(METADATA_FILE, 'r') as f:
-        metadata = json.load(f)
+    if not OPERATIONAL_METADATA.is_file():
+        write_json(OPERATIONAL_METADATA, operational_metadata(htmls))
+    else:
+        metadata = []
+        with open(OPERATIONAL_METADATA, 'r') as infile:
+            metadata = json.load(infile)
+    if not UNIFIED_CSV.is_file():
+        with open(OPERATIONAL_METADATA, 'r') as f:
+            # print(list(json.load(f)['columns'].values()))
+            column_names = list(json.load(f)['columns'].values())
+            write_csv_header(UNIFIED_CSV, column_names)
+    
+    # with open(METADATA_FILE, 'r') as f:
+    #     metadata = json.load(f)
         
-        for html in htmls[:10]:
-            with open(html, 'r') as raw_html:
-                header, rows = extract_operational_data(raw_html)
-                data = dict(zip(header, rows))
+    #     for html in htmls[:10]:
+    #         with open(html, 'r') as raw_html:
+    #             header, rows = extract_operational_data(raw_html)
+    #             data = dict(zip(header, rows))
 
 
