@@ -118,35 +118,36 @@ def write_operational_data(data: dict, file_metadata: dict):
 
 if __name__ == "__main__":
     htmls = [html.resolve() for html in RAW_FILES if html.is_file()]
+    print("Creando metadata gastos operacionales (json)")
     if not OPERATIONAL_METADATA.is_file():
         write_json(OPERATIONAL_METADATA, operational_metadata(htmls))
     else:
         metadata = []
         with open(OPERATIONAL_METADATA, 'r') as infile:
             metadata = json.load(infile)
-    print("Creando operational_metadata")
+
+    print("Creando metadata archivo gastos operacionales (csv)")
     if not UNIFIED_CSV.is_file():
         with open(OPERATIONAL_METADATA, 'r') as f:
             # print(list(json.load(f)['columns'].values()))
             column_names = list(json.load(f)['columns'].values())
             write_csv_header(UNIFIED_CSV, column_names)
-    
-    print("Creando archivo completo")
+
+    print("Creando archivo metadata diputados (kkkkkkkkkkkkkkkkkcsv)")    
     metadata =json.load(f)
     with open(METADATA_FILE, 'r') as f:
         metadata = json.load(f)
-        total_files = len(htmls)
-        for idx, html in enumerate(htmls):
-            file_metadata = filename_metadata(html)
-            # print(file_metadata)
-            data = {}
-        
-        
-            with open(html, 'r') as raw_html:
-                header, rows = extract_operational_data(raw_html)
-                data = dict(zip(header, rows))
-                if data:
-                    # print(data)
-                    write_operational_data(data, file_metadata)
+
+    print("Creando archivo gastos operacionales (csv)")
+    total_files = len(htmls)
+    for idx, html in enumerate(htmls):
+        file_metadata = filename_metadata(html)
+        print(f"Añadidos {idx} de {total_files}")
+        data = {}
+        with open(html, 'r') as raw_html:
+            header, rows = extract_operational_data(raw_html)
+            data = dict(zip(header, rows))
+            if data:
+                write_operational_data(data, file_metadata)
 
 
