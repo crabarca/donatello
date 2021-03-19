@@ -1,6 +1,6 @@
 django==3.0.7
 psycopg2-binary
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 beautifulsoup4
 lxml
 scrapy==2.1.0
