@@ -3,6 +3,6 @@ psycopg2-binary
 djangorestframework==3.11.0
 beautifulsoup4
 lxml
-scrapy==2.1.0
+scrapy==2.6.2
 selenium
 requests
